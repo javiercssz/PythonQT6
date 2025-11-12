@@ -1,0 +1,26 @@
+#Ignora los archivos JSON
+*.json
+
+#Ignora los archivos de configuración YAML
+*.yaml
+*.yml
+#Ignora los archivos de texto plano
+*.txt
+#Ignora los archivos de log
+*.log
+#Ignora los archivos CSV
+*.csv   
+#Ignora los archivos XML
+*.xml   
+#Ignora los archivos Markdown
+*.md    
+#Ignora los archivos de Excel
+*.xls
+*.xlsx
+#Ignora los archivos de Word
+*.doc
+*.docx
+*.odt
+
+#Ignora los archivos de espacio de trabajo de Visual Studio Code
+*.code-workspace
