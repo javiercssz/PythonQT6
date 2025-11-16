@@ -1,9 +1,9 @@
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QTextEdit, QWidget,
     QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton,
-    QFileDialog, QLabel, QToolBar, QStatusBar, QMessageBox
+    QFileDialog, QLabel, QToolBar, QStatusBar, QMessageBox, QColorDialog
 )
-from PySide6.QtGui import QAction, QKeySequence
+from PySide6.QtGui import QAction, QKeySequence, QTextDocument, QIcon
 from PySide6.QtCore import Qt
 import os
 
@@ -12,13 +12,13 @@ class MiniWord(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Mini Word")
-        self.resize(900, 600)
+        self.resize(950, 600)
 
-        # ==== ÁREA DE TEXTO ====
+    
         self.editor = QTextEdit()
         self.editor.textChanged.connect(self.contar_palabras)
 
-        # ==== PANEL DE BUSCAR / REEMPLAZAR ====
+
         self.panel_buscar = QWidget()
         self.panel_buscar.setFixedWidth(250)
         self.panel_buscar.setVisible(False)  # oculto al inicio
@@ -56,7 +56,7 @@ class MiniWord(QMainWindow):
 
         self.panel_buscar.setLayout(layout_panel)
 
-        # ==== LAYOUT PRINCIPAL ====
+
         contenedor = QWidget()
         layout_principal = QHBoxLayout()
         layout_principal.addWidget(self.editor)
@@ -64,47 +64,50 @@ class MiniWord(QMainWindow):
         contenedor.setLayout(layout_principal)
         self.setCentralWidget(contenedor)
 
-        # ==== VARIABLES ====
+
         self.ruta_archivo = None
 
-        # ==== BARRA DE MENÚ ====
+
         menu = self.menuBar()
         menu_archivo = menu.addMenu("Archivo")
         menu_editar = menu.addMenu("Editar")
 
-        # ==== ACCIONES ====
-        nuevo = QAction("Nuevo", self)
+
+        nuevo = QAction(QIcon.fromTheme("document-new"), "Nuevo", self)
         nuevo.setShortcut(QKeySequence("Ctrl+N"))
         nuevo.triggered.connect(self.nuevo)
 
-        abrir = QAction("Abrir", self)
+        abrir = QAction(QIcon.fromTheme("document-open"), "Abrir", self)
         abrir.setShortcut(QKeySequence("Ctrl+O"))
         abrir.triggered.connect(self.abrir)
 
-        guardar = QAction("Guardar", self)
+        guardar = QAction(QIcon.fromTheme("document-save"), "Guardar", self)
         guardar.setShortcut(QKeySequence("Ctrl+S"))
         guardar.triggered.connect(self.guardar)
 
-        salir = QAction("Salir", self)
+        salir = QAction(QIcon.fromTheme("application-exit"), "Salir", self)
         salir.setShortcut(QKeySequence("Ctrl+E"))
         salir.triggered.connect(self.close)
 
-        buscar = QAction("Buscar / Reemplazar", self)
+        buscar = QAction(QIcon.fromTheme("edit-find"), "Buscar / Reemplazar", self)
         buscar.setShortcut(QKeySequence("Ctrl+F"))
         buscar.triggered.connect(self.toggle_panel_buscar)
 
-        mayusculas = QAction("texto a mayúculas", self)
+        mayusculas = QAction(QIcon.fromTheme("format-text-uppercase"), "Texto a mayúculas", self)
         mayusculas.setShortcut(QKeySequence("Ctrl+M"))
         mayusculas.triggered.connect(self.convertir_a_mayusculas)
 
-        # ==== MENÚ ====
+        fondo = QAction(QIcon.fromTheme("preferences-desktop-color"),   "Cambiar color de fondo", self)
+        fondo.setShortcut(QKeySequence("Ctrl+B"))
+        fondo.triggered.connect(self.cambiarColorFondo)
+        
         for a in (nuevo, abrir, guardar, salir):
             menu_archivo.addAction(a)
         
-        for a in (buscar, mayusculas):
+        for a in (buscar, mayusculas, fondo):
             menu_editar.addAction(a)
 
-        # ==== BARRA DE HERRAMIENTAS ====
+    
         barra = QToolBar("Herramientas")
         self.addToolBar(barra)
         barra.addAction(nuevo)
@@ -112,7 +115,7 @@ class MiniWord(QMainWindow):
         barra.addAction(guardar)
         barra.addAction(buscar)
 
-        # ==== BARRA DE ESTADO ====
+    
         self.status = QStatusBar()
         self.setStatusBar(self.status)
         self.label_palabras = QLabel("Palabras: 0")
@@ -147,10 +150,14 @@ class MiniWord(QMainWindow):
 
     def contar_palabras(self):
         texto = self.editor.toPlainText().strip()
-        n = len(texto.split()) if texto else 0
-        self.label_palabras.setText(f"Palabras: {n}")
 
-    # PANEL DE BUSCAR / REEMPLAZAR
+        if texto:
+            # Si el texto no está vacío, contamos las palabras
+                n = len(texto.split())
+        else:
+            # Si el texto está vacío, el número de palabras es 0
+            n = 0
+        self.label_palabras.setText(f"Palabras: {n}")
 
     def toggle_panel_buscar(self):
         """Muestra u oculta el panel lateral."""
@@ -166,7 +173,7 @@ class MiniWord(QMainWindow):
     def buscar_anterior(self):
         texto = self.caja_buscar.text()
         if texto:
-            if not self.editor.find(texto, QTextEdit.FindFlag.FindBackward):
+            if not self.editor.find(texto, QTextDocument.FindFlag.FindBackward):
                 self.status.showMessage("No se encontró coincidencia anterior.", 2000)
 
     def buscar_todo(self):
@@ -197,7 +204,11 @@ class MiniWord(QMainWindow):
     def convertir_a_mayusculas(self):
         texto = self.editor.toPlainText().upper()
         self.editor.setPlainText(texto)
-
+    
+    def cambiarColorFondo(self, color):
+        color = QColorDialog.getColor()
+        if color.isValid():
+            self.editor.setStyleSheet(f"background-color: {color.name()};")
 
 if __name__ == "__main__":
     app = QApplication([])
