@@ -4,8 +4,6 @@
 #Ignora los archivos de configuración YAML
 *.yaml
 *.yml
-#Ignora los archivos de texto plano
-*.txt
 #Ignora los archivos de log
 *.log
 #Ignora los archivos CSV
