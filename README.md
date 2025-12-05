@@ -31,6 +31,7 @@ Personalización de la Aplicación: Agregar opciones para cambiar el color de fo
 Contador de Palabras: Incluir una etiqueta en la barra de estado que muestre la cantidad de palabras en el área de texto.
 
 Capturas .exe paso a paso:
+
 ![alt text](image.png)
 ![alt text](image-1.png)
 ![alt text](image-2.png)
@@ -44,3 +45,4 @@ Capturas .exe paso a paso:
 ![alt text](image-10.png)
 ![alt text](image-11.png)
 ![alt text](image-12.png)
+
