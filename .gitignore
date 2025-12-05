@@ -57,9 +57,4 @@ Thumbs.db
 /build/
 /.venv/
 /Output/
-*.png
-*.jpg 
-*.jpeg
-*.gif
-*.bmp
-*.tiff
+
