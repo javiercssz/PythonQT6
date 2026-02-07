@@ -6,10 +6,10 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QAction, QKeySequence, QTextDocument, QIcon
 from PySide6.QtCore import Qt
 import os
+from contadorWidget import WordCounterWidget
 
 # IMPORTACIÓN PARA RECONOCIMIENTO DE VOZ
 import speech_recognition as sr
-
 
 class MiniWord(QMainWindow):
     def __init__(self):
@@ -19,6 +19,7 @@ class MiniWord(QMainWindow):
 
         # Editor de texto
         self.editor = QTextEdit()
+        # Conectamos el cambio de texto a nuestra función que actualiza el widget
         self.editor.textChanged.connect(self.contar_palabras)
 
         # Panel Buscar/Reemplazar
@@ -100,7 +101,6 @@ class MiniWord(QMainWindow):
         fondo.setShortcut("Ctrl+B")
         fondo.triggered.connect(self.cambiarColorFondo)
 
-        # NUEVA ACCIÓN → RECONOCIMIENTO DE VOZ
         voz = QAction("Dictado por voz", self)
         voz.setShortcut("Ctrl+R")
         voz.triggered.connect(self.reconocimiento_voz)
@@ -120,11 +120,14 @@ class MiniWord(QMainWindow):
         barra.addAction(buscar)
         barra.addAction(voz)
 
-        # Status bar
+        # Status bar configurada con WordCounterWidget
         self.status = QStatusBar()
         self.setStatusBar(self.status)
-        self.label_palabras = QLabel("Palabras: 0")
-        self.status.addPermanentWidget(self.label_palabras)
+        
+        # Instanciamos tu clase personalizada de conteo
+        self.contador_info = WordCounterWidget()
+        # La añadimos de forma permanente a la derecha de la status bar
+        self.status.addPermanentWidget(self.contador_info)
 
     # ----------- FUNCIONES ------------
 
@@ -141,16 +144,13 @@ class MiniWord(QMainWindow):
 
             texto = recognizer.recognize_google(audio, language="es-ES")
             self.editor.insertPlainText(texto + " ")
-
             self.status.showMessage("Texto agregado desde voz.", 2000)
-            self.contar_palabras()
+            # El conteo se actualiza automáticamente por la señal textChanged
 
         except sr.WaitTimeoutError:
             self.status.showMessage("No se detectó voz.", 2000)
-
         except sr.UnknownValueError:
             self.status.showMessage("No se entendió lo que dijiste.", 2000)
-
         except sr.RequestError:
             self.status.showMessage("Error con el servicio de reconocimiento de voz.", 2000)
 
@@ -180,9 +180,9 @@ class MiniWord(QMainWindow):
         self.status.showMessage("Archivo guardado correctamente.", 2000)
 
     def contar_palabras(self):
-        texto = self.editor.toPlainText().strip()
-        n = len(texto.split()) if texto else 0
-        self.label_palabras.setText(f"Palabras: {n}")
+        """Llama al método del widget especializado para procesar el texto"""
+        texto_actual = self.editor.toPlainText()
+        self.contador_info.update_from_text(texto_actual)
 
     def toggle_panel_buscar(self):
         visible = not self.panel_buscar.isVisible()
@@ -226,7 +226,7 @@ class MiniWord(QMainWindow):
     def convertir_a_mayusculas(self):
         self.editor.setPlainText(self.editor.toPlainText().upper())
 
-    def cambiarColorFondo(self, color):
+    def cambiarColorFondo(self):
         color = QColorDialog.getColor()
         if color.isValid():
             self.editor.setStyleSheet(f"background-color: {color.name()};")
