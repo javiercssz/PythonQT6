@@ -1,5 +1,7 @@
 TareaFinalTema1.py
 
+Este proyecto consiste en un editor de texto enriquecido desarrollado con PySide6, enfocado en la modularización mediante componentes reutilizables y la comunicación basada en eventos utilizando el mecanismo de Signals & Slots de Qt.
+
 Esta es el ejercicio final del tema 1 de Pyside 6. Tiene las siguientes funcionalidades:
 
 Ventana Principal: La aplicación debe tener una ventana principal con un título “Mini Word”.
